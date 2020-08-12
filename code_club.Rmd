@@ -1,18 +1,20 @@
 ---
-title: "R Code Club: Defensive Programming"
-output: html_notebook
+title: 'R Code Club: Defensive Programming'
+author: "James"
+date: "12/08/2020"
+output: html_document
 ---
+
+
+```{r}
+knitr::opts_chunk$set(cache=T, warning=F, error=T, message=F, echo=T, fig.width=8, fig.height=5)
+```
 
 Two types of tests:  
 1. Unit Tests - used in development to check that you haven't made any mistakes  
 2. Run time tests - used at run time to check that the user hasn't made a mistake while running your code
 
 Goal is to halt proceedings if something wrong occurs rather than go through potentially expensive processing.  So we need to be able to catch issues
-
-
-```{r}
-knitr::opts_chunk$set(chace=T, warning = F, message = F, echo = T, fig.width = 8, fig.height = 8)
-```
 
 
 ## Basic function 1
@@ -26,6 +28,7 @@ taking_log <- function(x) {
 ```{r}
 taking_log(100)
 ```
+
 ```{r}
 taking_log("x")
 ```
@@ -50,7 +53,7 @@ taking_log_part2("x")
 
 These work fine. Great!
 
-## More tests ....
+### More tests ....
 ```{r}
 taking_log_part2(-15)
 ```
@@ -64,7 +67,7 @@ taking_log_part3 <- function(x) {
 }
 ```
 
-## Tests now look like ..
+My tests now look like ..
 ```{r}
 taking_log_part3(100)
 taking_log_part3("x")
@@ -83,13 +86,12 @@ or vectors
 x <- taking_log_part3(c(1,-2))
 x
 ```
-Only the first element is checked -> we'd need to loop through each element or use purrr
-
-
-And on it goes
+**Note** Only the first element is checked -> we'd need to loop through each element or use purrr.  This could get complicated, if only there were a simplier way ......
 
 
 ## Assertive
+
+Assert lets us check if a condition holds before proceeding
 
 ```{r}
 library(assertive)
@@ -100,6 +102,8 @@ library(magrittr)
 ```{r}
 assert_is_numeric(15)
 ```
+
+But we can also use assertive statements with the pipe.  This makes for a very powerful method of checking
 
 ```{r}
 x <- 15 %>% 
@@ -114,6 +118,8 @@ x <- 15 %>%
 x
 ```
 
+and they work with vectors
+
 ```{r}
 x <- c(15,3) %>% 
     assert_is_numeric() %>% 
@@ -121,12 +127,6 @@ x <- c(15,3) %>%
 x
 ```
 
-```{r}
-x <- c(15,-3) %>% 
-    assert_is_numeric() %>% 
-    assert_all_are_greater_than(0)
-x
-```
 ```{r}
 x <- c(6+5i) %>% 
     assert_is_numeric() %>% 
@@ -137,7 +137,7 @@ x
 
 
 ## Assertive with Try/Catch  
-We dont want to crash our code intentionally.  What do we do?
+We dont want to crash our code intentionally, and give the user some obsecure error message.  We want to be able to handle errors elegantly.
 
 
 ```{r}
@@ -157,6 +157,7 @@ taking_log_part5 <- function(x) {
 }
 ```
 
+Now, either x takes the value we want or it takes NA and we can handle that elsewhere
 ```{r}
 x <- taking_log_part5(100)
 x
@@ -174,7 +175,6 @@ x
 ```
 
 
-
 ```{r}
 x <- taking_log_part5(6+5i)
 x
@@ -187,6 +187,8 @@ x <- taking_log_part5(c(100, 1000))
 x
 ```
 
+Not, **every** element of our data has to pass to pass the assert statement, otherwise we could be proceding with erroneous data.  As the saying goes (GIGO) garbage in garbage out 
+
 ```{r}
 x <- taking_log_part5(c(100, -15))
 x
@@ -198,7 +200,7 @@ x <- taking_log_part5(c(100, "x"))
 x
 ```
 
-
+## Dataframes
 
 ```{r}
 x <- data.frame("A"=c(1,2,3,4,5,5), "B"=c("a", "b", "c", "d", "e", "e"))
@@ -207,6 +209,9 @@ a <- x %>%
     has_duplicates()
 a
 ```
-
-[Assertive documentation](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiakaSVsJDrAhUOQxUIHQOzDwIQFjACegQIAxAB&url=https%3A%2F%2Fwww.rdocumentation.org%2Fpackages%2Fassertive%2Fversions%2F0.3-6&usg=AOvVaw0zjrQLzY6TucaB4_KXMqNB)
+There are lots of other things we could check on a dataframe besides duplicate, eg. length, class of columns, etc.  There are also lots of other assertive statements we can make  
+1. assertive.datetimes  
+2. assertive.string  
+3. assertive.files  
+for more informatin check out the documentation  [Assertive documentation](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiakaSVsJDrAhUOQxUIHQOzDwIQFjACegQIAxAB&url=https%3A%2F%2Fwww.rdocumentation.org%2Fpackages%2Fassertive%2Fversions%2F0.3-6&usg=AOvVaw0zjrQLzY6TucaB4_KXMqNB)
 
