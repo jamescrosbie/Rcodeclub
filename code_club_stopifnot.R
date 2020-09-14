@@ -3,10 +3,11 @@
 ## STOPIFNOT should be STOP-function-IFNOT
 rm(list=ls())
 library(dplyr)
+library(here)
 library(readxl)
 
 
-file <- "test_excel_file.xlsx"
+file <- here("test_excel_file.xlsx")
 
 pipe_print <- function(x, sheet){
     print(paste0("Number of rows in ", sheet, " ", nrow(x)))
@@ -15,20 +16,19 @@ pipe_print <- function(x, sheet){
 
 
 #Catching errors
-DF <-
+df <-
     tryCatch(
-        read_excel(file, sheet="Main sheet", col_types = "text")%>%
+        read_excel(file, sheet="Main sheet2", col_types = "text")%>%
             rename(Pack_size=`Pack size`, Concessionary_price=`Current CP`) %>%
             select(Drug, Pack_size, Status, Concessionary_price) %>%
             pipe_print("Main sheet") ,
         error=function(e){
-            data.frame()
+            NA
         }
     )
 
-stopifnot(nrow(DF)>0)
+stopifnot(!is.na(df))
 print("SHOULD NOT GET HERE IF USING MAIN SHEET 2")
-print(paste0("[INFO]: Number of rows in dataframe ", nrow(DF)))
 print("Doing lots of other stuff ..... ")
 
 #########################################################################################
@@ -38,25 +38,25 @@ import_fn <- function(file, sheet_name){
     print(paste0("[INFO]: Working on file ", file))
 
     # Get CP from file
-    DF <-
+    df <-
         tryCatch(
-            read_excel(file, sheet=sheet_name, col_types = "text") %>%
+            df <- read_excel(file, sheet=sheet_name, col_types = "text") %>%
                 rename(Pack_size=`Pack size`, Concessionary_price=`Current CP`) %>%
                 select(Drug, Pack_size, Status, Concessionary_price) %>%
                 pipe_print(sheet_name) ,
             error=function(e){
-                data.frame()
+                NA
             }
         )
-    stopifnot(nrow(DF)>0)
-    print(paste0("[INFO]: Number of rows in dataframe ", nrow(DF)))
+    stopifnot(!is.na(df))
+
     print("Doing some more processing")
 
-    return(DF)
+    return(df)
 }
 
 #load data
-rm(DF)
+rm(df, DF)
 DF <- import_fn(file, sheet_name="Main sheet")
 if(exists("DF")){
     print("Pushing to database")
