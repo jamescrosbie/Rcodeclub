@@ -2,6 +2,7 @@
 ## Catching errors in workflow
 ## STOPIFNOT should be STOP-function-IFNOT
 rm(list=ls())
+cat("\014")
 library(dplyr)
 library(here)
 library(readxl)
@@ -9,13 +10,16 @@ library(readxl)
 
 file <- here("test_excel_file.xlsx")
 
+#Look at the data
+
+
 pipe_print <- function(x, sheet){
     print(paste0("Number of rows in ", sheet, " ", nrow(x)))
     return(x)
 }
 
 
-#Catching errors
+#Catching errors - main sheet 2 does not exist
 df <-
     tryCatch(
         read_excel(file, sheet="Main sheet2", col_types = "text")%>%

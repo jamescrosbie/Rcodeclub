@@ -1,5 +1,5 @@
 ---
-title: "R Code Club: Defensive Programming"
+title: "R Code Club: Testing Code"
 output: html_notebook
 ---
 
@@ -11,7 +11,7 @@ Goal is to halt proceedings if something wrong occurs rather than go through pot
 
 
 ```{r}
-knitr::opts_chunk$set(chace=T, warning = F, message = F, echo = T, fig.width = 8, fig.height = 8)
+knitr::opts_chunk$set(chace=T, warning = F, message = F, echo = T, fig.width = 8, fig.height = 5)
 ```
 
 
@@ -55,7 +55,7 @@ These work fine. Great!
 taking_log_part2(-15)
 ```
 
-NaN's are numeric.  So -15 would pass our tests.  Need to build in more tests
+Need to build in more tests
 
 ```{r}
 taking_log_part3 <- function(x) {
@@ -101,6 +101,7 @@ library(magrittr)
 assert_is_numeric(15)
 ```
 
+If passes assert, returns the value
 ```{r}
 x <- 15 %>% 
     assert_is_numeric()
@@ -114,6 +115,7 @@ x <- 15 %>%
 x
 ```
 
+Works easily with vectors
 ```{r}
 x <- c(15,3) %>% 
     assert_is_numeric() %>% 
@@ -121,6 +123,7 @@ x <- c(15,3) %>%
 x
 ```
 
+Otherwise crashes
 ```{r}
 x <- c(15,-3) %>% 
     assert_is_numeric() %>% 
@@ -145,7 +148,6 @@ taking_log_part5 <- function(x) {
     tryCatch(
         x %>% 
             assert_is_numeric() %>% 
-            assert_all_are_positive() %>% 
             assert_all_are_greater_than(0) %>% 
             assert_is_double() %>% 
             log(),
@@ -199,6 +201,8 @@ x
 ```
 
 
+# With dataframes
+We can make use of the assert package functions, to check our data ....
 
 ```{r}
 x <- data.frame("A"=c(1,2,3,4,5,5), "B"=c("a", "b", "c", "d", "e", "e"))
@@ -209,4 +213,42 @@ a
 ```
 
 [Assertive documentation](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiakaSVsJDrAhUOQxUIHQOzDwIQFjACegQIAxAB&url=https%3A%2F%2Fwww.rdocumentation.org%2Fpackages%2Fassertive%2Fversions%2F0.3-6&usg=AOvVaw0zjrQLzY6TucaB4_KXMqNB)
+
+
+## Exercise
+Write a function using assertive package to calculate Geometric Mean
+$$\hat{x} = \sqrt[\leftroot{-3}\uproot{3} n ]{\prod_{i=1}^{n} x_i } $$
+
+```{r}
+geometric_mean <- function(x, na.rm=FALSE){
+    return( exp(mean(log(x), na.rm=na.rm)) )
+}
+```
+
+
+
+
+## A solution
+
+```{r}
+geometric_mean <- function(x, na.rm=FALSE){
+    tryCatch(
+        x %>% 
+            assert_is_numeric() %>% 
+            assert_all_are_greater_than(0) %>% 
+            assert_is_double() %>% 
+            log() %>% 
+            mean(na.rm=na.rm) %>% 
+            exp(),
+        error=function(e){
+            print("x makes no sense")
+            NA
+        }
+    )
+}
+```
+
+geometric_mean(c(1,1))
+geometric_mean(c(2,2))
+geometric_mean(c(2,x))
 

@@ -1,7 +1,7 @@
 # R Coding Club
 ## 12 August 2020
 
-Teaching how to do basic defensive programming.  
+Teaching how to do basic of Testing Code.  
 1. Run-time tests using the assertive package; 
 2. Stopifnot 
 3. Unit-tests using the testthat package

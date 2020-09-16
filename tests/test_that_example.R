@@ -1,11 +1,15 @@
+rm(list=ls())
+cat("\014")
+
 library(testthat)
 
-source("../simple_function.R")
+source(here("simple_function.R"))
 
 test_that(
     "Test that hypotenus returns correct values",
     {
-        expected <- 5; actual <- hypotenus(3,4)
+        expected <- 5;
+        actual <- hypotenus(3,4)
         expect_equal(expected, actual)
     }
 )
@@ -38,10 +42,10 @@ test_that(
 )
 
 #Using the command line
-# test_file("test_that_example.R")
-# test_file("test_that_example.R", "minimal")
-# test_file("test_that_example.R", "summary")
-# test_file("test_that_example.R", "progress")
-# test_dir("test_that_example.R")
+# test_file(here("tests","test_that_example.R"))
+# test_file(here("tests","test_that_example.R", "minimal"))
+# test_file(here("tests","test_that_example.R", "summary"))
+# test_file(here("tests","test_that_example.R", "progress"))
+# test_dir(here("tests"))
 
 
